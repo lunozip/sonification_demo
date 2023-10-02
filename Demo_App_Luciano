@@ -1,0 +1,50 @@
+
+import matplotlib
+import matplotlib.pyplot as plt
+import flet as ft
+from flet.matplotlib_chart import MatplotlibChart
+import wave
+import numpy as np
+import matplotlib.colors as colors
+
+matplotlib.use("svg")
+
+def main(page:ft.Page):
+    page.title = "Sonification"
+    page.navigation_bar = ft.NavigationBar(
+        destinations=[
+
+            #pegar iconet em https://gallery.flet.dev/icons-browser/
+            ft.NavigationDestination(icon=ft.icons.EXPLORE, label="Explore"),
+            ft.NavigationDestination(icon=ft.icons.FILE_UPLOAD, label="Sound Upload"),
+            ft.NavigationDestination(icon=ft.icons.MENU,label="Menu",
+            ),
+        ]
+    )
+
+    fig, ax=plt.subplots() 
+
+    #Plotando uma frequencia
+    #manipular som https://learnpython.com/blog/plot-waveform-in-python/
+    wav_obj = wave.open('C:/105263__latki__pulsarb193921.wav', 'rb')
+    sample_freq = wav_obj.getframerate()
+    n_samples = wav_obj.getnframes()
+    t_audio = n_samples/sample_freq
+    signal_wave = wav_obj.readframes(n_samples)
+    signal_array = np.frombuffer(signal_wave, dtype=np.int16)
+
+    ax.specgram(signal_array, Fs=sample_freq, vmin=-20, vmax=50)
+    ax.legend("Signal Array")
+    ax.set_ylabel("Frequency (Hz)")
+    ax.set_xlabel("Time (s)")
+    ax.set_xlim(0, t_audio)
+
+    page.add(ft.Text("Usei a amostra de som de um pulsar e plotei usando matplotlib, aplicação em flet, link do som https://freesound.org/people/Latki/sounds/105263/"))
+
+    page.add(MatplotlibChart(fig, expand=True))
+
+ft.app(target=main)
+
+
+
+
